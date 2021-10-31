@@ -1,5 +1,5 @@
 const QRCode = require('qrcode')
-const Canvas = require('canvas')
+const Jimp = require('jimp')
 const fs = require('fs')
 
 var exampleStuff = {
@@ -20,7 +20,7 @@ var data = [
 for (let i = 0; i < data.length; i++) {
     console.log(data[i].length)
 
-    QRCode.toDataURL(
+    QRCode.toBuffer(
         data[i],
         {
             errorCorrectionLevel: 'H',
@@ -29,25 +29,21 @@ for (let i = 0; i < data.length; i++) {
                 light: '#0000' // Transparent background
             }
         },
-        async function (err, url) {
+        async function (err, buffer) {
             if (err) throw err
 
-            const qrCode = await Canvas.loadImage(url)
+            const qrCode = await Jimp.read(buffer)
 
-            const canvas = Canvas.createCanvas(qrCode.width, qrCode.height);
-            const context = canvas.getContext('2d');
+            const frcLogo = await Jimp.read('./frcLogo.png');
 
-            context.drawImage(qrCode, 0, 0, canvas.width, canvas.height);
-            
-            const frcLogo = await Canvas.loadImage('./frcLogo.png');
-
-            context.drawImage(
+            qrCode.composite(
                 frcLogo, 
-                canvas.width / 2 - frcLogo.width / 2,
-                canvas.height / 2 - frcLogo.height / 2
+                qrCode.getWidth() / 2 - frcLogo.getWidth() / 2,
+                qrCode.getHeight() / 2 - frcLogo.getHeight() / 2
             )
 
-            fs.writeFileSync(`./qr${i}.png`, canvas.toBuffer())
+            var finalBuffer = await qrCode.getBufferAsync(Jimp.MIME_PNG);
+            fs.writeFileSync(`./qr${i}.png`, finalBuffer)
         }
     )
 }

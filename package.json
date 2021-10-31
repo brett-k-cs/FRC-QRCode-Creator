@@ -9,7 +9,7 @@
   "author": "brett-k-cs",
   "license": "MIT",
   "dependencies": {
-    "canvas": "^2.8.0",
+    "jimp": "^0.16.1",
     "qrcode": "^1.4.4"
   }
 }
