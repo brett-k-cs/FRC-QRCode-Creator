@@ -18,7 +18,7 @@ var data = [
 ]
 
 for (let i = 0; i < data.length; i++) {
-    console.log(data[i].length)
+    console.log(`QR Code #${i}'s data has a length of ${data[i].length} characters.`)
 
     QRCode.toBuffer(
         data[i],
@@ -44,6 +44,9 @@ for (let i = 0; i < data.length; i++) {
 
             var finalBuffer = await qrCode.getBufferAsync(Jimp.MIME_PNG);
             fs.writeFileSync(`./qr${i}.png`, finalBuffer)
+            var stats = fs.statSync(`./qr${i}.png`)
+            var fileSizeInBytes = stats.size;
+            console.log(`QR Code #${i} has finished generating with a size of ${Math.round(fileSizeInBytes / 1000)}kb.`)
         }
     )
 }
